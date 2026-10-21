@@ -1,0 +1,420 @@
+/* The book shell: the desk, the object, the page, and the turning of pages. */
+
+.reader {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background:
+    radial-gradient(120% 90% at 50% 45%, transparent 40%, rgba(120, 95, 70, 0.16) 100%),
+    var(--desk);
+}
+
+/* A whisper of paper texture on the desk itself */
+.reader::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: var(--grain);
+  opacity: 0.07;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+
+/* ---------------------------------------------------------------- the object */
+
+.book {
+  position: relative;
+  width: var(--page-w);
+  height: var(--page-h);
+  border-radius: 1px 3px 3px 1px;
+  box-shadow:
+    0 1px 1px rgba(60, 40, 25, 0.06),
+    0 14px 28px -14px rgba(60, 40, 25, 0.28),
+    0 48px 90px -40px rgba(60, 40, 25, 0.4);
+  transition: box-shadow 1s var(--ease-soft);
+}
+
+/* Page edges: the block of pages already read sits left, what remains sits right. */
+.book__stack {
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  background:
+    repeating-linear-gradient(90deg, #f3ecdf 0 1px, #dcd1bf 1px 2px);
+  transition: width var(--t-turn) var(--ease-page);
+  pointer-events: none;
+}
+
+.book__stack--right {
+  left: 100%;
+  width: calc((1 - var(--read)) * 9px + 1px);
+  border-radius: 0 2px 2px 0;
+  box-shadow: 2px 1px 3px rgba(60, 40, 25, 0.12);
+}
+
+.book__stack--left {
+  right: 100%;
+  width: calc(var(--read) * 9px);
+  border-radius: 2px 0 0 2px;
+  box-shadow: -2px 1px 3px rgba(60, 40, 25, 0.12);
+}
+
+.is-closed .book__stack--left {
+  width: 0;
+}
+
+/* ---------------------------------------------------------------- the stage */
+
+.stage {
+  position: absolute;
+  inset: 0;
+  perspective: 2600px;
+  perspective-origin: 30% 50%;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.leaf {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  container-type: size;
+  container-name: page;
+  backface-visibility: hidden;
+  transform-origin: left center;
+  will-change: auto;
+}
+
+.stage.is-turning .leaf {
+  will-change: transform, opacity;
+}
+
+.leaf--leave {
+  pointer-events: none;
+}
+
+/* ---------------------------------------------------------------- the page */
+
+.page {
+  --pad-x: clamp(1.5rem, 9cqi, 5.2rem);
+  --pad-top: clamp(3.75rem, 11cqi, 6.5rem);
+  --pad-bottom: clamp(4rem, 11cqi, 6.5rem);
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.page.tone-cream { background: var(--cream); }
+.page.tone-ink {
+  background: var(--night);
+  color: var(--night-ink);
+}
+
+/* Fibre of the paper */
+.page::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: var(--grain);
+  opacity: 0.055;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.page.tone-ink::after {
+  mix-blend-mode: screen;
+  opacity: 0.05;
+}
+
+/* The binding: a soft shadow where the page meets the spine */
+.page:not(.page--cover)::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 7%;
+  background: linear-gradient(90deg, rgba(70, 50, 30, 0.1), rgba(70, 50, 30, 0.03) 45%, transparent);
+  pointer-events: none;
+  z-index: 6;
+}
+
+.page.tone-ink::before {
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.35), transparent) !important;
+}
+
+.page__body {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--rule) transparent;
+}
+
+.layout {
+  position: relative;
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  padding: var(--pad-top) var(--pad-x) var(--pad-bottom);
+}
+
+.page__running {
+  position: absolute;
+  top: calc(var(--pad-top) * 0.46);
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 0.62rem;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  pointer-events: none;
+  z-index: 4;
+}
+
+.page__folio {
+  position: absolute;
+  bottom: calc(var(--pad-bottom) * 0.42);
+  z-index: 7;
+}
+
+.is-recto .page__folio { right: var(--pad-x); }
+.is-verso .page__folio { left: var(--pad-x); }
+
+.page__mark {
+  position: absolute;
+  bottom: calc(var(--pad-bottom) * 0.42);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 7;
+}
+
+.page__draft {
+  position: absolute;
+  top: 0;
+  right: var(--pad-x);
+  z-index: 8;
+  padding: 0.38rem 0.6rem 0.42rem;
+  font-size: 0.56rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--wine);
+  background: var(--rose-soft);
+  border-radius: 0 0 2px 2px;
+  opacity: 0.85;
+  pointer-events: none;
+  max-width: calc(100% - 2 * var(--pad-x));
+}
+
+.page__audio {
+  padding: 0 var(--pad-x) var(--pad-bottom);
+  margin-top: calc(var(--pad-bottom) * -0.5);
+}
+
+/* ---------------------------------------------------------------- turning */
+
+/* Forward: the page lifts from the right edge and is laid over to the left. */
+.turn-turn.dir-next .leaf--leave {
+  z-index: 3;
+  animation: leaf-lift var(--t-turn) var(--ease-page) both;
+}
+.turn-turn.dir-next .leaf--enter {
+  z-index: 2;
+  animation: leaf-settle var(--t-turn) var(--ease-soft) both;
+}
+
+/* Backward: the previous page is laid back down over this one. */
+.turn-turn.dir-prev .leaf--enter {
+  z-index: 3;
+  animation: leaf-lift var(--t-turn) var(--ease-page) reverse both;
+}
+.turn-turn.dir-prev .leaf--leave {
+  z-index: 2;
+  animation: leaf-settle var(--t-turn) var(--ease-soft) reverse both;
+}
+
+/* Shadow sweeping across the page beneath as a leaf passes over it */
+.turn-turn .leaf::before,
+.turn-open .leaf--enter::before {
+  transition: none;
+}
+
+@keyframes leaf-lift {
+  0% {
+    transform: rotateY(0deg);
+    opacity: 1;
+    box-shadow: 0 0 0 rgba(40, 25, 15, 0);
+  }
+  55% {
+    opacity: 1;
+  }
+  100% {
+    transform: rotateY(-38deg) translateX(-2%);
+    opacity: 0;
+    box-shadow: -30px 0 60px rgba(40, 25, 15, 0.18);
+  }
+}
+
+@keyframes leaf-settle {
+  0% {
+    opacity: 0.35;
+    filter: brightness(0.94);
+  }
+  100% {
+    opacity: 1;
+    filter: none;
+  }
+}
+
+/* Jumping from the contents: a quiet dissolve */
+.turn-jump .leaf--leave {
+  z-index: 3;
+  animation: leaf-fade-out var(--t-jump) var(--ease-soft) both;
+}
+.turn-jump .leaf--enter {
+  z-index: 2;
+  animation: leaf-fade-in var(--t-jump) var(--ease-soft) both;
+}
+
+@keyframes leaf-fade-out {
+  to { opacity: 0; }
+}
+@keyframes leaf-fade-in {
+  from { opacity: 0; transform: scale(0.994); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Opening the cover: the board swings open on its hinge. */
+.turn-open .leaf--leave {
+  z-index: 4;
+  animation: cover-open var(--t-open) cubic-bezier(0.55, 0.03, 0.2, 1) both;
+}
+.turn-open .leaf--enter {
+  z-index: 2;
+  animation: under-cover var(--t-open) var(--ease-soft) both;
+}
+.turn-open {
+  --reveal-base: 780ms;
+}
+
+.turn-close .leaf--enter {
+  z-index: 4;
+  animation: cover-open var(--t-close) cubic-bezier(0.55, 0.03, 0.2, 1) reverse both;
+}
+.turn-close .leaf--leave {
+  z-index: 2;
+  animation: under-cover var(--t-close) var(--ease-soft) reverse both;
+}
+
+@keyframes cover-open {
+  0% {
+    transform: rotateY(0deg);
+    opacity: 1;
+    box-shadow: 0 0 0 rgba(30, 15, 10, 0);
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    transform: rotateY(-108deg);
+    opacity: 0;
+    box-shadow: -40px 0 80px rgba(30, 15, 10, 0.3);
+  }
+}
+
+@keyframes under-cover {
+  0% { filter: brightness(0.82); }
+  100% { filter: none; }
+}
+
+/* ---------------------------------------------------------------- page entrance */
+
+.leaf [data-reveal] {
+  animation: reveal var(--t-reveal) var(--ease-out) both;
+  animation-delay: calc(var(--reveal-base) + var(--d, 0) * var(--reveal-step));
+}
+
+.leaf [data-reveal='photo'] {
+  animation-name: reveal-photo;
+  animation-duration: 1250ms;
+}
+
+.leaf [data-reveal='photo'] .photo__media > .media {
+  animation: settle-photo 1800ms var(--ease-out) backwards;
+  animation-delay: calc(var(--reveal-base) + var(--d, 0) * var(--reveal-step));
+}
+
+.leaf--leave [data-reveal],
+.leaf--leave [data-reveal] .media {
+  animation: none !important;
+}
+
+@keyframes reveal {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes reveal-photo {
+  from { opacity: 0; clip-path: inset(0 0 7% 0); }
+  to { opacity: 1; clip-path: inset(0 0 0 0); }
+}
+
+@keyframes settle-photo {
+  from { transform: scale(1.035); }
+  to { transform: scale(1); }
+}
+
+/* ---------------------------------------------------------------- phones */
+
+/* Phones: the same book on the desk, a little taller in proportion to suit the screen. */
+@media (max-width: 700px) {
+  :root {
+    --page-ratio: 0.6;
+    --gutter-x: 2.6rem;
+    --gutter-y: calc(8rem + env(safe-area-inset-top) + env(safe-area-inset-bottom));
+  }
+  .book__stack--right { width: calc((1 - var(--read)) * 6px + 1px); }
+  .book__stack--left { width: calc(var(--read) * 6px); }
+  .page {
+    --pad-x: 1.35rem;
+    --pad-top: 3.4rem;
+    --pad-bottom: 3.6rem;
+  }
+  .stage {
+    perspective: 1600px;
+  }
+}
+
+/* Landscape phones: keep the book shape, small. */
+@media (max-height: 500px) and (orientation: landscape) {
+  :root {
+    --gutter-y: 1.5rem;
+  }
+}
+
+/* ---------------------------------------------------------------- reduced motion */
+
+@media (prefers-reduced-motion: reduce) {
+  .stage.is-turning .leaf--leave,
+  .stage.is-turning .leaf--enter {
+    animation: leaf-fade-in 240ms linear both !important;
+    transform: none !important;
+  }
+  .stage.is-turning .leaf--leave {
+    animation-name: leaf-fade-out !important;
+  }
+  .leaf [data-reveal],
+  .leaf [data-reveal] .media {
+    animation: none !important;
+  }
+  .book__stack {
+    transition: none;
+  }
+}

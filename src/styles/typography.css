@@ -1,0 +1,201 @@
+/* Typography system.
+   Display serif for titles, dates, quotes and feeling. Sans for reading and labels.
+   Handwriting only for marginalia. Sizes use container units, so they scale with the page, not the window. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: 16px;
+  color: var(--ink);
+  background: var(--desk);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-kerning: normal;
+  -webkit-tap-highlight-color: transparent;
+}
+
+h1, h2, h3, p, ol, ul, blockquote, figure {
+  margin: 0;
+  padding: 0;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+::selection {
+  background: var(--rose-soft);
+  color: var(--wine-deep);
+}
+
+:focus-visible {
+  outline: 1px solid var(--wine);
+  outline-offset: 4px;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------------- scale */
+
+.t-heading,
+.cover__title,
+.opening__title,
+.contents__title,
+.milestone__label,
+.final__statement,
+.end__title {
+  font-variant-numeric: lining-nums;
+}
+
+.t-heading {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(2.1rem, 7.4cqi, 3.7rem);
+  line-height: 1.02;
+  letter-spacing: -0.012em;
+  margin-bottom: clamp(1.2rem, 4cqi, 2.2rem);
+  text-wrap: balance;
+}
+
+.t-heading--sm {
+  font-size: clamp(1.8rem, 5.6cqi, 2.8rem);
+}
+
+.eyebrow {
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: clamp(0.9rem, 3cqi, 1.5rem);
+}
+
+.caption {
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+
+/* ---------------------------------------------------------------- reading */
+
+.prose {
+  font-size: clamp(1rem, 2.45cqi, 1.14rem);
+  line-height: 1.72;
+  color: color-mix(in srgb, var(--ink) 90%, transparent);
+  max-width: 34em;
+  hanging-punctuation: first;
+  text-wrap: pretty;
+}
+
+.prose p + p {
+  margin-top: 1.05em;
+}
+
+.prose em {
+  font-family: var(--font-display);
+  font-size: 1.12em;
+  font-style: italic;
+  letter-spacing: 0.005em;
+}
+
+.prose strong {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* A line that stands on its own */
+.prose .prose__statement {
+  margin: 0.55em 0;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 1.75em;
+  line-height: 1.12;
+  letter-spacing: -0.005em;
+  color: var(--wine);
+  text-wrap: balance;
+}
+
+.prose .prose__statement strong {
+  font-weight: inherit;
+  color: inherit;
+}
+
+.prose .prose__statement + p {
+  margin-top: 0.75em;
+}
+
+.prose--dropcap > p:first-child::first-letter {
+  float: left;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 4.3em;
+  line-height: 0.82;
+  padding: 0.08em 0.1em 0 0;
+  color: var(--wine);
+}
+
+/* ---------------------------------------------------------------- marginalia */
+
+.handnote {
+  font-family: var(--font-hand);
+  font-weight: 500;
+  font-size: clamp(1.15rem, 3.4cqi, 1.45rem);
+  line-height: 1.1;
+  color: var(--wine);
+}
+
+.mark {
+  display: inline-block;
+  font-size: 0.78rem;
+  color: var(--gold);
+  line-height: 1;
+  transition: opacity 0.4s var(--ease-soft), transform 0.6s var(--ease-out);
+  opacity: 0.75;
+}
+
+.secret__trigger:hover .mark {
+  opacity: 1;
+  transform: rotate(45deg);
+}
+
+.folio {
+  font-family: var(--font-display);
+  font-size: 0.98rem;
+  font-variant-numeric: oldstyle-nums;
+  color: var(--ink-faint);
+}
+
+/* Small phones: a touch tighter so a page's words stay on the page */
+@container page (max-height: 560px) {
+  .prose {
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+  .prose p + p {
+    margin-top: 0.85em;
+  }
+  .prose .prose__statement {
+    font-size: 1.6em;
+  }
+}

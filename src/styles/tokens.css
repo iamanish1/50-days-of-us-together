@@ -1,0 +1,64 @@
+/* Design tokens — every colour, face, and motion value in the book comes from here. */
+
+:root {
+  /* Paper */
+  --paper: #f6f1e7;          /* warm ivory — the page */
+  --paper-deep: #ece4d5;     /* placeholder wells, pale numerals */
+  --cream: #f1e7d4;          /* secondary pages, letters */
+  --sheet: #fbf8f1;          /* a slip of paper laid on the page */
+  --desk: #e3d9c9;           /* what the book rests on */
+  --desk-shade: #cfc2ae;
+
+  /* Ink */
+  --ink: #2a2522;            /* deep charcoal */
+  --ink-soft: #544b45;
+  --ink-faint: #766c64;      /* ≥ 4.5:1 on paper — small labels only */
+  --rule: rgba(42, 37, 34, 0.14);
+  --rule-strong: rgba(42, 37, 34, 0.32);
+
+  /* Accents */
+  --wine: #6e2a35;           /* muted burgundy */
+  --wine-deep: #4a1c25;
+  --rose: #c49891;           /* dusty rose */
+  --rose-soft: #ead6cf;
+  --gold: #a4875a;           /* used in tiny amounts */
+
+  /* Night (the rare dark page) */
+  --night: #221d1c;
+  --night-ink: #efe6d8;
+  --night-soft: rgba(239, 230, 216, 0.68);
+
+  /* Type */
+  --font-display: 'Cormorant Garamond', 'Cormorant', Garamond, 'Times New Roman', serif;
+  --font-body: 'Instrument Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-hand: 'Caveat', 'Bradley Hand', 'Segoe Print', cursive;
+
+  /* Page geometry */
+  --page-ratio: 0.72;
+  --gutter-x: 12rem;
+  --gutter-y: 7rem;
+  --page-h: min(calc(100dvh - var(--gutter-y)), calc((100vw - var(--gutter-x)) / var(--page-ratio)), 1120px);
+  --page-w: calc(var(--page-h) * var(--page-ratio));
+
+  /* Motion */
+  --ease-page: cubic-bezier(0.62, 0.02, 0.22, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
+  --t-turn: 820ms;
+  --t-open: 1350ms;
+  --t-close: 1150ms;
+  --t-jump: 620ms;
+  --t-reveal: 1100ms;
+  --reveal-base: 260ms;
+  --reveal-step: 140ms;
+
+  /* Texture */
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .6 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@media (max-width: 1100px) {
+  :root {
+    --gutter-x: 4rem;
+    --gutter-y: 6rem;
+  }
+}
